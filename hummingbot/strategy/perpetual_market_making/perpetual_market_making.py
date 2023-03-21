@@ -353,7 +353,7 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
             spread = 0 if price == 0 else abs(order.price - price) / price
             age = pd.Timestamp(order_age(order, self.current_timestamp), unit='s').strftime('%H:%M:%S')
 
-            amount_orig = "" if level is None else self._order_amount + ((level - 1) * self._order_level_amount)
+            amount_orig = "" if level is None else self._order_amount / self.get_price() + ((level - 1) * self._order_level_amount / self.get_price())
             data.append([
                 level,
                 "buy" if order.is_buy else "sell",
@@ -655,14 +655,14 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
             for level in range(0, self._buy_levels):
                 price = self.get_price() * (Decimal("1") - self._bid_spread - (level * self._order_level_spread))
                 price = market.quantize_order_price(self.trading_pair, price)
-                size = self._order_amount + (self._order_level_amount * level)
+                size = self._order_amount / self.get_price() + (self._order_level_amount / self.get_price() * level)
                 size = market.quantize_order_amount(self.trading_pair, size)
                 if size > 0:
                     buys.append(PriceSize(price, size))
             for level in range(0, self._sell_levels):
                 price = self.get_price() * (Decimal("1") + self._ask_spread + (level * self._order_level_spread))
                 price = market.quantize_order_price(self.trading_pair, price)
-                size = self._order_amount + (self._order_level_amount * level)
+                size = self._order_amount / self.get_price() + (self._order_level_amount / self.get_price() * level)
                 size = market.quantize_order_amount(self.trading_pair, size)
                 if size > 0:
                     sells.append(PriceSize(price, size))

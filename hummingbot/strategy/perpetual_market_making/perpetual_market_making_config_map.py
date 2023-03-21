@@ -34,7 +34,7 @@ def validate_derivative_position_mode(value: str) -> Optional[str]:
 def order_amount_prompt() -> str:
     trading_pair = perpetual_market_making_config_map["market"].value
     base_asset, quote_asset = trading_pair.split("-")
-    return f"What is the amount of {base_asset} per order? >>> "
+    return f"What is the amount of {quote_asset} per order? >>> "
 
 
 def validate_price_source(value: str) -> Optional[str]:
@@ -176,14 +176,14 @@ perpetual_market_making_config_map = {
                   prompt_on_new=True),
     "long_profit_taking_spread":
         ConfigVar(key="long_profit_taking_spread",
-                  prompt="At what spread from the entry price do you want to place a short order to reduce position? (Enter 1 for 1%) >>> ",
+                  prompt="At what spread from the position entry price do you want to place a short order to reduce your long position? (Enter 1 for 1%) >>> ",
                   type_str="decimal",
                   default=Decimal("0"),
                   validator=lambda v: validate_decimal(v, 0, 100, True),
                   prompt_on_new=True),
     "short_profit_taking_spread":
         ConfigVar(key="short_profit_taking_spread",
-                  prompt="At what spread from the position entry price do you want to place a long order to reduce position? (Enter 1 for 1%) >>> ",
+                  prompt="At what spread from the position entry price do you want to place a long order to reduce your short position? (Enter 1 for 1%) >>> ",
                   type_str="decimal",
                   default=Decimal("0"),
                   validator=lambda v: validate_decimal(v, 0, 100, True),
