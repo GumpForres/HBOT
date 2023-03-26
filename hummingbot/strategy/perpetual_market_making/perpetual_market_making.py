@@ -185,7 +185,7 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
     def bid_order_level_amount(self) -> Decimal:
         return self._bid_order_level_amount
 
-    @order_level_amount.setter
+    @bid_order_level_amount.setter
     def bid_order_level_amount(self, value: Decimal):
         self._bid_order_level_amount = value
 
@@ -193,7 +193,7 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
     def ask_order_level_amount(self) -> Decimal:
         return self._ask_order_level_amount
 
-    @order_level_amount.setter
+    @ask_order_level_amount.setter
     def ask_order_level_amount(self, value: Decimal):
         self._ask_order_level_amount = value
 
