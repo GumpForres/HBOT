@@ -229,10 +229,18 @@ perpetual_market_making_config_map = {
                   type_str="int",
                   validator=lambda v: validate_int(v, min_value=0, inclusive=False),
                   default=1),
-    "order_level_amount":
-        ConfigVar(key="order_level_amount",
+    "bid_order_level_amount":
+        ConfigVar(key="bid_order_level_amount",
                   prompt="How much do you want to increase or decrease the order size for each "
-                         "additional order? (decrease < 0 > increase) >>> ",
+                         "additional bid order? (decrease < 0 > increase) >>> ",
+                  required_if=lambda: perpetual_market_making_config_map.get("order_levels").value > 1,
+                  type_str="decimal",
+                  validator=lambda v: validate_decimal(v),
+                  default=0),
+    "ask_order_level_amount":
+        ConfigVar(key="ask_order_level_amount",
+                  prompt="How much do you want to increase or decrease the order size for each "
+                         "additional ask order? (decrease < 0 > increase) >>> ",
                   required_if=lambda: perpetual_market_making_config_map.get("order_levels").value > 1,
                   type_str="decimal",
                   validator=lambda v: validate_decimal(v),

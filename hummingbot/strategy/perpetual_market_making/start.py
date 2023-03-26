@@ -29,7 +29,8 @@ def start(self):
         price_ceiling = c_map.get("price_ceiling").value
         price_floor = c_map.get("price_floor").value
         order_levels = c_map.get("order_levels").value
-        order_level_amount = c_map.get("order_level_amount").value
+        bid_order_level_amount = c_map.get("bid_order_level_amount").value
+        ask_order_level_amount = c_map.get("ask_order_level_amount").value
         order_level_spread = c_map.get("order_level_spread").value / Decimal('100')
         exchange = c_map.get("derivative").value.lower()
         raw_trading_pair = c_map.get("market").value
@@ -84,7 +85,8 @@ def start(self):
             stop_loss_slippage_buffer=stop_loss_slippage_buffer,
             order_levels=order_levels,
             order_level_spread=order_level_spread,
-            order_level_amount=order_level_amount,
+            bid_order_level_amount=bid_order_level_amount,
+            ask_order_level_amount=ask_order_level_amount,
             order_refresh_time=order_refresh_time,
             order_refresh_tolerance_pct=order_refresh_tolerance_pct,
             filled_order_delay=filled_order_delay,

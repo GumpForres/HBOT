@@ -62,7 +62,8 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
                     stop_loss_slippage_buffer: Decimal,
                     order_levels: int = 1,
                     order_level_spread: Decimal = s_decimal_zero,
-                    order_level_amount: Decimal = s_decimal_zero,
+                    bid_order_level_amount: Decimal = s_decimal_zero,
+                    ask_order_level_amount: Decimal = s_decimal_zero,
                     order_refresh_time: float = 30.0,
                     order_refresh_tolerance_pct: Decimal = s_decimal_neg_one,
                     filled_order_delay: float = 60.0,
@@ -98,7 +99,8 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
         self._buy_levels = order_levels
         self._sell_levels = order_levels
         self._order_level_spread = order_level_spread
-        self._order_level_amount = order_level_amount
+        self._bid_order_level_amount = bid_order_level_amount
+        self._ask_order_level_amount = ask_order_level_amount
         self._order_refresh_time = order_refresh_time
         self._order_refresh_tolerance_pct = order_refresh_tolerance_pct
         self._filled_order_delay = filled_order_delay
@@ -180,12 +182,20 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
         self._sell_levels = value
 
     @property
-    def order_level_amount(self) -> Decimal:
-        return self._order_level_amount
+    def bid_order_level_amount(self) -> Decimal:
+        return self._bid_order_level_amount
 
     @order_level_amount.setter
-    def order_level_amount(self, value: Decimal):
-        self._order_level_amount = value
+    def bid_order_level_amount(self, value: Decimal):
+        self._bid_order_level_amount = value
+
+    @property
+    def ask_order_level_amount(self) -> Decimal:
+        return self._ask_order_level_amount
+
+    @order_level_amount.setter
+    def ask_order_level_amount(self, value: Decimal):
+        self._ask_order_level_amount = value
 
     @property
     def order_level_spread(self) -> Decimal:
@@ -344,16 +354,17 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
         for idx in range(0, len(active_orders)):
             order = active_orders[idx]
             level = None
+            amount_orig = ""
             if order.is_buy:
                 level = lvl_buy + 1
                 lvl_buy += 1
-            else:
+                amount_orig = (self._order_amount + (level - 1) * self._bid_order_level_amount) / self.get_price()
+            elif not order.is_buy:
                 level = no_sells - lvl_sell
                 lvl_sell += 1
+                amount_orig = (self._order_amount + (level - 1) * self._ask_order_level_amount) / self.get_price()
             spread = 0 if price == 0 else abs(order.price - price) / price
             age = pd.Timestamp(order_age(order, self.current_timestamp), unit='s').strftime('%H:%M:%S')
-
-            amount_orig = "" if level is None else self._order_amount / self.get_price() + ((level - 1) * self._order_level_amount / self.get_price())
             data.append([
                 level,
                 "buy" if order.is_buy else "sell",
@@ -655,14 +666,14 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
             for level in range(0, self._buy_levels):
                 price = self.get_price() * (Decimal("1") - self._bid_spread - (level * self._order_level_spread))
                 price = market.quantize_order_price(self.trading_pair, price)
-                size = self._order_amount / self.get_price() + (self._order_level_amount / self.get_price() * level)
+                size = (self._order_amount + self._bid_order_level_amount * level) / self.get_price()
                 size = market.quantize_order_amount(self.trading_pair, size)
                 if size > 0:
                     buys.append(PriceSize(price, size))
             for level in range(0, self._sell_levels):
                 price = self.get_price() * (Decimal("1") + self._ask_spread + (level * self._order_level_spread))
                 price = market.quantize_order_price(self.trading_pair, price)
-                size = self._order_amount / self.get_price() + (self._order_level_amount / self.get_price() * level)
+                size = (self._order_amount + self._ask_order_level_amount * level) / self.get_price()
                 size = market.quantize_order_amount(self.trading_pair, size)
                 if size > 0:
                     sells.append(PriceSize(price, size))
