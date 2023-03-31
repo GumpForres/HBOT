@@ -2,16 +2,16 @@
 # init
 # =============================================
 
-# Specify hummingbot version
+# Specify hbot version
 select_version () {
  echo
  echo
- echo "===============  UPDATE HUMMINGBOT INSTANCE ==============="
+ echo "===============  UPDATE HBOT INSTANCE ==============="
  echo
  echo
  echo "ℹ️  Press [ENTER] for default values:"
  echo
- read -p "   Enter Hummingbot version to update [latest/development] (default = \"latest\") >>> " TAG
+ read -p "   Enter Hbot version to update [latest/development] (default = \"latest\") >>> " TAG
  if [ "$TAG" == "" ]
  then
    TAG="latest"
@@ -23,11 +23,11 @@ list_instances () {
  echo
  echo "List of all docker containers using the \"$TAG\" version:"
  echo
- docker ps -a --filter ancestor=hummingbot/hummingbot:$TAG
+ docker ps -a --filter ancestor=hbot:$TAG
  echo
  echo "⚠️  WARNING: This will attempt to update all instances. Any containers not in Exited () STATUS will cause the update to fail."
  echo
- echo "ℹ️  TIP: Connect to a running instance using \"./start.sh\" command and \"exit\" from inside Hummingbot."
+ echo "ℹ️  TIP: Connect to a running instance using \"./start.sh\" command and \"exit\" from inside Hbot."
  echo "ℹ️  TIP: You can also remove unused instances by running \"docker rm [NAME]\" in the terminal."
  echo
  read -p "   Do you want to continue? [Y/N] >>> " CONTINUE
@@ -50,9 +50,9 @@ list_dir () {
 prompt_folder () {
  for instance in "${INSTANCES[@]}"
  do
-   if [ "$instance" == "hummingbot-instance" ]
+   if [ "$instance" == "hbot" ]
    then
-     DEFAULT_FOLDER="hummingbot_files"
+     DEFAULT_FOLDER="hbot_files"
    else
      DEFAULT_FOLDER="${instance}_files"
    fi
@@ -90,14 +90,14 @@ confirm_update () {
 
 # Execute docker commands
 execute_docker () {
- # 1) Delete instance and old hummingbot image
+ # 1) Delete instance and old hbot image
  echo
  echo "Removing docker containers first ..."
  docker rm ${INSTANCES[@]}
  echo
  # 2) Delete old image
- docker image rm hummingbot/hummingbot:$TAG
- # 3) Re-create instances with the most recent hummingbot version
+ docker image rm hbot:$TAG
+ # 3) Re-create instances with the most recent hbot version
  echo "Re-creating docker containers with updated image ..."
  j="0"
  for instance in "${INSTANCES[@]}"
@@ -111,7 +111,7 @@ execute_docker () {
    -v $PMM_SCRIPTS_FOLDER:/pmm_scripts \
    -v $SCRIPTS_FOLDER:/scripts \
    -v $CERTS_FOLDER:/certs \
-   hummingbot/hummingbot:$TAG
+   hbot:$TAG
    j=$[$j+1]
    # Update file ownership
  done
@@ -130,7 +130,7 @@ if [ "$CONTINUE" == "Y" ]
 then
  # Store instance names in an array
  declare -a INSTANCES
- INSTANCES=( $(docker ps -a --filter ancestor=hummingbot/hummingbot:$TAG --format "{{.Names}}") )
+ INSTANCES=( $(docker ps -a --filter ancestor=hbot:$TAG --format "{{.Names}}") )
  list_dir
  declare -a FOLDERS
  prompt_folder

@@ -358,11 +358,11 @@ class PerpetualMarketMakingStrategy(StrategyPyBase):
             if order.is_buy:
                 level = lvl_buy + 1
                 lvl_buy += 1
-                amount_orig = (self._order_amount + (level - 1) * self._bid_order_level_amount) / self.get_price()
+                amount_orig = (self._order_amount + (level - 1) * self._bid_order_level_amount) / price
             elif not order.is_buy:
                 level = no_sells - lvl_sell
                 lvl_sell += 1
-                amount_orig = (self._order_amount + (level - 1) * self._ask_order_level_amount) / self.get_price()
+                amount_orig = (self._order_amount + (level - 1) * self._ask_order_level_amount) / price
             spread = 0 if price == 0 else abs(order.price - price) / price
             age = pd.Timestamp(order_age(order, self.current_timestamp), unit='s').strftime('%H:%M:%S')
             data.append([

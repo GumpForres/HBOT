@@ -10,10 +10,10 @@ echo
 docker ps -a
 echo
 echo
-read -p "   Enter the NAME of the Hbot instance to start or connect to (default = \"hbot-instance\") >>> " INSTANCE_NAME
+read -p "   Enter the NAME of the Hbot instance to start or connect to (default = \"hbot\") >>> " INSTANCE_NAME
 if [ "$INSTANCE_NAME" == "" ]
 then
-  INSTANCE_NAME="hbot-instance"
+  INSTANCE_NAME="hbot"
 fi
 echo
 # =============================================
