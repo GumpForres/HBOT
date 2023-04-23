@@ -2,7 +2,7 @@
 ###       Perpetual market making strategy config         ###
 ########################################################
 
-template_version: 6
+template_version: 6.1
 strategy: null
 
 # derivative and token parameters.
@@ -68,8 +68,11 @@ price_floor: null
 # Number of levels of orders to place on each side of the order book.
 order_levels: null
 
-# Increase or decrease size of consecutive orders after the first order (if order_levels > 1).
-order_level_amount: null
+# Increase or decrease size of consecutive bid orders after the first bid order (if order_levels > 1).
+bid_order_level_amount: null
+
+# Increase or decrease size of consecutive bid orders after the first ask order (if order_levels > 1).
+ask_order_level_amount: null
 
 # Order price space between orders (if order_levels > 1).
 order_level_spread: null
